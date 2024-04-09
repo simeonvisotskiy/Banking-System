@@ -11,18 +11,23 @@ void Account::createAccount() {
 	std::string tempName;
 	std::cout << "\nEnter your Name: ";
 	std::cin >> tempName;
+	
 	if (st.find(tempName) != st.end()) {
 		while (st.find(tempName) != st.end()) {
 			std::cout << "Invalid username\n";
-			std::cout << "Enter a new one";
+			std::cout << "Enter a new one: ";
+			//std::cin.ignore();
 			std::cin >> tempName;
+			
 		}
 	}
+	this->name = tempName;
 
 	std::cout << "\nEnter your password: ";
 	std::cin >> password;
 	std::cout << "\nEnter a deposit: ";
 	std::cin >> amount;
+	saveAccount(*this);
 
 }
 

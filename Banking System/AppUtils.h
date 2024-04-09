@@ -8,23 +8,24 @@
 #include<vector>
 #include<set>
 #include<sstream>
+#include<utility>
 
 
-   std::vector<Account> loadAccounts();
+std::vector<Account> loadAccounts();
 
-   void saveAccount(const Account& account);
+void saveAccount(const Account& account);
 
-   std::set<std::string> getNames();
+std::set<std::string> getNames();
 
-   void singOrLog();
+void removeAcc(const std::string& name);
 
-   void removeAcc(const std::string& name);
+bool logIn(Account& acc);
 
-   void logIn();
+std::vector< Account> getNamesAndPass();
 
-   void signUp();
+void mainMenu(Account& acc);
 
-   void mainMenu();
+void withdrawMoney(Account& acc);
 
 
 
