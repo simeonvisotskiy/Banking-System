@@ -6,28 +6,30 @@ Account::Account():amount(0), name(""), password("") {}
 Account::Account(double amount, std::string name, std::string password)
 	: amount(amount), name(name), password(password) {}
 
-void Account::createAccount() {
-	std::set<std::string>st = getNames();
+void Account::createAccount(std::vector<Account>& accounts) {
+	std::set<std::string> names;
+	for (const auto& acc : accounts) {
+		names.insert(acc.getName());
+	}
+
 	std::string tempName;
 	std::cout << "\nEnter your Name: ";
 	std::cin >> tempName;
 	
-	if (st.find(tempName) != st.end()) {
-		while (st.find(tempName) != st.end()) {
-			std::cout << "Invalid username\n";
-			std::cout << "Enter a new one: ";
-			//std::cin.ignore();
-			std::cin >> tempName;
-			
-		}
+	while (names.find(tempName) != names.end()) {
+		std::cout << "Invalid username, already taken.\n";
+		std::cout << "Enter a new one: ";
+		std::cin >> tempName;
 	}
 	this->name = tempName;
 
 	std::cout << "\nEnter your password: ";
-	std::cin >> password;
+	std::cin >> this->password;
 	std::cout << "\nEnter a deposit: ";
-	std::cin >> amount;
-	saveAccount(*this);
+	std::cin >> this->amount;
+
+	
+	accounts.push_back(*this);
 
 }
 

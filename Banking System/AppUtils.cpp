@@ -28,10 +28,12 @@ std::set<std::string> getNames() {
 	return accNames;
 }
 
-void saveAccount(const Account& account) {
-	std::ofstream file("accounts.txt", std::ios::app);
+void saveAccount(const std::vector<Account>& accounts) {
+	std::ofstream file("accounts.txt", std::ios::trunc);
 	if (file.is_open()) {
-		file << account.getName() << " " << account.getPassword() << " " << account.getAmount() << "\n";
+		for (const auto& account : accounts) {
+			file << account.getName() << " " << account.getPassword() << " " << account.getAmount() << "\n";
+		}
 		file.close();
 	}
 	else {
@@ -39,29 +41,16 @@ void saveAccount(const Account& account) {
 	}
 }
 
-void removeAcc(const std::string& nameToRemove) {
-	std::vector<std::string> accounts;
-	std::ifstream file("accounts.txt");
-	std::string line, name;
-
-	while (getline(file, line)) {
-		std::stringstream lineStream(line);
-		lineStream >> name;
-
-		if (nameToRemove != name) {
-			accounts.push_back(line);
+void removeAcc(const std::string& nameToRemove, std::vector<Account>& accounts) {
+	for (auto it = accounts.begin();it != accounts.end();it++) {
+		if (it->getName() == nameToRemove) {
+			accounts.erase(it);
 		}
 	}
-	file.close();
-	std::ofstream outFile("accounts.txt", std::ofstream::trunc);
-	for (const auto& acc : accounts) {
-		outFile << acc << "\n";
-	}
-	outFile.close();
 }
 
-bool logIn(Account& acc) {
-	std::vector<Account>vec = getNamesAndPass();
+bool logIn(std::vector<Account>& accounts, Account& acc) {
+
 	std::string name, password;
 	bool login = false;
 
@@ -72,32 +61,28 @@ bool logIn(Account& acc) {
 		std::cout << "\nEnter your password: ";
 		std::cin >> password;
 
-		for (const auto& account:vec){
+		for (const auto& account: accounts){
 			if (account.getName() == name && account.getPassword() == password) {
 				std::cout << "Login successful!"<< std::endl;
-				acc.setName(account.getName());
-				acc.setPassword(account.getPassword());
-				acc.setAmount(account.getAmount());
-				removeAcc(account.getName());
-				//login = true;
+				acc = account;
 				return true ;
 			}
 
 		}
-		if (!login) {
-			std::cout << "Incorrect name or password\n";
-			std::cout << "Try again Y/N: ";
-			char choice;
-			std::cin >> choice;
-			if (choice == 'n' || choice == 'N') {
-				return false;
-			}
+		
+		std::cout << "Incorrect name or password\n";
+		std::cout << "Try again Y/N: ";
+		char choice;
+		std::cin >> choice;
+		if (choice == 'n' || choice == 'N') {
+			return false;
 		}
+		
 	}
 	return false;
 }
 
-void mainMenu(Account& acc)
+void mainMenu(Account& acc, std::vector<Account>& accounts)
 {
 	int choice = 0;
 	while (true)
@@ -119,18 +104,17 @@ void mainMenu(Account& acc)
 			break;
 		case 2:
 			withdrawMoney(acc);
-			saveAccount(acc);
+			updateAccount(accounts, acc);
+			saveAccount(accounts);
 			break;
 		case 3:
-			std::cout << "Type account name: ";
-			std::cin >> temp;
-			removeAcc(temp);
+			removeAcc(acc.getName(), accounts);
+			saveAccount(accounts);
 			return;
 		case 4:
-			std::cout << "Type amount";
-			std::cin >> amouth;
-			acc.setAmount(amouth);
-			saveAccount(acc);
+			depositMoney(acc);
+			updateAccount(accounts, acc);
+			saveAccount(accounts);
 
 			break;
 		case 5:
@@ -169,11 +153,38 @@ void withdrawMoney(Account& acc) {
 	std::cout << "Available balance:" << acc.getAmount()<<std::endl;
 	double amount;
 	std::cin >> amount;
+	if (amount <= 0) {
+		std::cout << "Withdrawl shoud be positive.\n";
+		return;
+	}
 	if (acc.getAmount() - amount < 0) {
 		std::cout << "Unable to complete transaction\n";
 	}
 	else {
 		acc.setAmount(acc.getAmount() - amount);
+		std::cout << "Withdrawl successful.";
 	}
 
+}
+
+void depositMoney(Account& acc) {
+	double deposit;
+	std::cout << "Enter deposit: ";
+	std::cin >> deposit;
+	if (deposit > 0) {
+		acc.setAmount(acc.getAmount() + deposit);
+		std::cout << "Deposit successful." << std::endl;
+	}
+	else {
+		std::cout << "Invalid deposit amount." << std::endl;
+	}
+}
+
+void updateAccount(std::vector<Account>& accounts, const Account& updateAccount) {
+	for (auto& account : accounts) {
+		if (account.getName() == updateAccount.getName()) {
+			account = updateAccount;
+			break;
+		}
+	}
 }

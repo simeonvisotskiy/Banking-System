@@ -1,9 +1,11 @@
 #include "Account.h"
 #include "AppUtils.h"
 
+
 int main() {
-    Account acc;
+    //Account acc;
 	int choice = 0;
+	std::vector<Account>accounts = getNamesAndPass();
 
 	while (true)
 	{
@@ -13,23 +15,29 @@ int main() {
 		std::cin >> choice;
 
 		switch (choice) {
-		case 1:
-			if (logIn(acc)) {
-				mainMenu(acc);
+		case 1: {
+			Account logInAccount;
+			if (logIn(accounts, logInAccount)) {
+				mainMenu(logInAccount, accounts);
 			}
+			break;
+		}
 			
+		case 2: {
+			Account newAccount;
+			newAccount.createAccount(accounts);
+			//saveAccount(accounts);
+			mainMenu(newAccount, accounts);
 			break;
-		case 2:
-			acc.createAccount();
-			mainMenu(acc);
-			break;
+		}
 		case 3:
+			saveAccount(accounts);
 			return 0;
 		default:
 			std::cout << "Invalid choice. Please try again.\n";
 		}
 	}
 
-
+	saveAccount(accounts);
 	return 0;
 }

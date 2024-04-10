@@ -22,9 +22,9 @@ public:
 
 	void setName(const std::string& name_) { name = name_; }
 	void setPassword(const std::string& password_) { password = password_; }
-	void setAmount(const double& amount_) { amount += amount_; }
+	void setAmount(const double& amount_) { amount = amount_; }
 
-	void createAccount();
+	void createAccount(std::vector<Account>& accounts);
 	void printAmount();
 	void print();
 
