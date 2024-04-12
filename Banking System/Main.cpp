@@ -1,9 +1,20 @@
 #include "Account.h"
 #include "AppUtils.h"
+#include"FXData.h"
 
 
 int main() {
-    //Account acc;
+
+
+	//std::map<std::string, double> exchangeRates;
+
+	//std::string apiKey = "0ff731280066f9b0115cacdc";
+	//std::string baseCurrency = "BGN"; // or any base currency you're interested in
+	////std::string response = fetchExchangeRate(apiKey, baseCurrency);
+
+	////std::cout << "Response: \n" << response << std::endl;
+	//return 0;
+    Account acc;
 	int choice = 0;
 	std::vector<Account>accounts = getNamesAndPass();
 

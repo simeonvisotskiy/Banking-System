@@ -6,6 +6,8 @@
 #include<string>
 #include<fstream>
 #include<vector>
+#include"FXData.h"
+
 
 class Account
 {
