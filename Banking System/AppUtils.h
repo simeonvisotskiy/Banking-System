@@ -14,6 +14,7 @@
 #include <chrono>
 #include <iomanip>
 #include <cmath>
+#include <regex>
 
 std::vector<Account> loadAccounts();
 
@@ -21,7 +22,7 @@ void saveAccount(const std::vector<Account>& accounts);
 
 std::set<std::string> getNames();
 
-void removeAcc(const std::string& name,const std::vector<Account>& accounts);
+bool removeAcc(const std::string& name,const std::vector<Account>& accounts);
 
 bool logIn(std::vector<Account>& accounts, Account& acc);
 

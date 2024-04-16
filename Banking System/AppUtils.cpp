@@ -43,15 +43,27 @@ void saveAccount(const std::vector<Account>& accounts) {
 	}
 }
 
-void removeAcc(const std::string& nameToRemove, std::vector<Account>& accounts) {
-	/*char ch;
-	std::cout << "Are you sure you want to remove your account?";
-	std::cin >> ch;*/
-	
+bool removeAcc(const std::string& nameToRemove, std::vector<Account>& accounts) {
 
-	for (auto it = accounts.begin();it != accounts.end();it++) {
-		if (it->getName() == nameToRemove) {
-			accounts.erase(it);
+
+	std::string ch;
+	std::cout << "Are you sure you want to remove your account? " << " (Y/N) ";
+	std::cin >> ch;
+	while (true) {
+		if (ch == "N" || ch == "n") {
+			return false;
+		}
+		else if (ch == "Y" || ch == "y") {
+			for (auto it = accounts.begin(); it != accounts.end(); it++) {
+				if (it->getName() == nameToRemove) {
+					accounts.erase(it);
+					return true;
+				}
+			}
+		}
+		else {
+			std::cout << "\nInvalid input try again: ";
+			std::cin >> ch;
 		}
 	}
 }
@@ -91,7 +103,7 @@ bool logIn(std::vector<Account>& accounts, Account& acc) {
 
 void mainMenu(Account& acc, std::vector<Account>& accounts)
 {
-	int choice = 0;
+	std::string choice;
 	while (true)
 	{
 		std::cout << "\n1. Account balance\n";
@@ -103,43 +115,57 @@ void mainMenu(Account& acc, std::vector<Account>& accounts)
 		std::cout << "7. Deposit\n";
 		std::cout << "8. Exit\n";
 		std::cin >> choice;
-		std::string temp;
-		double balance = acc.getAmount();
-		//double amouth;
+		std::cin.ignore();
 
-		switch (choice) {
-		case 1:
-			std::cout << "Account balance: " << balance << std::endl;
-			break;
-		case 2:
+		if (choice == "1")
+		{
+			std::cout << "Account balance: " << acc.getAmount() << std::endl;
+		}
+		else if (choice == "2")
+		{
 			withdrawMoney(acc);
 			updateAccount(accounts, acc);
 			saveAccount(accounts);
-			break;
-		case 3:
-			removeAcc(acc.getName(), accounts);
+		}
+		else if (choice == "3")
+		{
+			if (removeAcc(acc.getName(), accounts))
+			{
+				std::cout << "Account removed. \n";
+				return;
+			}
+			else
+			{
+				std::cout << "Account removal cancelled. \n";
+			}
 			saveAccount(accounts);
-			return;
-		case 4:
+		}
+		else if (choice == "4")
+		{
 			depositMoney(acc);
 			updateAccount(accounts, acc);
 			saveAccount(accounts);
-
-			break;
-		case 5:
+		}
+		else if (choice == "5")
+		{
 			displayExchangeRate(accounts);
-			break;
-		case 6:
+		}
+		else if (choice == "6")
+		{
 			sendMoney(accounts, acc);
 			saveAccount(accounts);
-			break;
-		case 7:
+		}
+		else if (choice == "7")
+		{
 			depositMenu(acc, accounts);
 			saveAccount(accounts);
-			break;
-		case 8:
+		}
+		else if (choice == "8")
+		{
 			return;
-		default:
+		}
+		else
+		{
 			std::cout << "Invalid choice. Please try again.\n";
 		}
 	}
@@ -200,7 +226,9 @@ void depositMoney(Account& acc) {
 void updateAccount(std::vector<Account>& accounts, const Account& updateAccount) {
 	for (auto& account : accounts) {
 		if (account.getName() == updateAccount.getName()) {
-			account = updateAccount;
+			//account.setPassword(updateAccount.getPassword());
+			account.setAmount(updateAccount.getAmount());
+			//account = updateAccount;
 			break;
 		}
 	}
@@ -226,7 +254,7 @@ void displayExchangeRate(const std::vector<Account>& accounts) {
 }
 
 void sendMoney(std::vector<Account>& accounts, Account& curr) {
-	std::string name,password;
+	std::string name;
 	bool transaction = false;
 	double amount;
 
@@ -236,6 +264,7 @@ void sendMoney(std::vector<Account>& accounts, Account& curr) {
 
 		for (auto& account : accounts) {
 			if (account.getName() == name ) {
+				std::string password;
 				std::cout << "Enter the account password: ";
 				std::cin >> password;
 
@@ -276,52 +305,69 @@ void sendMoney(std::vector<Account>& accounts, Account& curr) {
 }
 
 void depositMenu(Account& acc, std::vector<Account>& accounts) {
-	int choice = 0;
-	double amount = 0;
+	std::string choice;
+	double amount = 0.0;
 	std::vector<Deposit> deposits = loadDeposits();
 
 	while (true) {
 		std::cout << "\n1. Make a deposit\n";
 		std::cout << "2. See deposit\n";
 		std::cout << "3. Exit\n";
-		std::cin >> choice;
-		
+		std::getline(std::cin, choice);
 
-		switch (choice)
-		{
-		case 1: {
-			std::string expiryDateStr;
+		if (choice == "1") {
+			std::string expiryDateStr,amountStr;
 			std::cout << "Enter deposit amount: ";
-			std::cin >> amount;
-			std::cout << "Enter expiry date (YYYY-MM-DD): ";
-			std::cin >> expiryDateStr;
+			std::getline(std::cin, amountStr);
+
+			if (amountStr.empty() || !std::all_of(amountStr.begin(), amountStr.end(), ::isdigit)) {
+				std::cout << "Invalid deposit amount. Please enter a valid number.\n";
+				continue;
+			}
+
+			amount = std::stod(amountStr);
 
 			if (amount > acc.getAmount()) {
-				break;
+				std::cout << "Insufficient balance.\n";
+				continue;
 			}
-			else {
-				acc.setAmount(acc.getAmount() - amount);
+
+			std::cout << "Enter expiry date (YYYY-MM-DD): ";
+			std::getline(std::cin, expiryDateStr);
+
+			std::regex dateFormat("([0-9]{4})-([0-9]{2})-([0-9]{2})");
+			if (!std::regex_match(expiryDateStr, dateFormat)) {
+				std::cout << "Invalid date format.\n";
+				continue;
 			}
+			
+			auto expiryDate = parseDate(expiryDateStr);
 			auto now = std::chrono::system_clock::now();
+			auto sixMonthsFromNow = now + std::chrono::months(6);
+
+			if (expiryDate <= now || expiryDate > sixMonthsFromNow) {
+				std::cout << "The expiry date should be at least 6 months from now.\n";
+				continue;
+			}
+
+			acc.setAmount(acc.getAmount() - amount);
+
 			auto depositDateStr = formatDate(now);
 			deposits.push_back(Deposit{ acc.getName(), amount, parseDate(depositDateStr), parseDate(expiryDateStr) });
+
 			std::cout << "Deposit added successfully.\n";
 			saveDeposits(deposits);
 			updateAccount(accounts, acc);
 			saveAccount(accounts);
 		}
-			break;
-		case 2:
-		{
+		else if (choice == "2") {
 			displayDeposits(acc);
 		}
-			break;
-		case 3:
-			//saveDeposits(deposits);
+		else if (choice == "3") {
 			return;
-		default:
+		}
+		else {
 			std::cout << "Invalid choice. Try again.\n";
-			break;
 		}
 	}
 }
@@ -331,8 +377,10 @@ int daysBetween(const std::chrono::system_clock::time_point& start, const std::c
 }
 double calculateAccruedAmount(double initialAmount, int days) {
 
+	double dailyInterest = 0.0025;
+
 	for (int i = 0;i < days;i++) {
-		initialAmount *= 1.001;
+		initialAmount *= 1.0025;
 	}
 
 	return initialAmount;
@@ -349,7 +397,7 @@ void displayDeposits(const Account& acc) {
 
 	for (const auto& deposit : userDeposits) {
 		int days = daysBetween(deposit.depositDate, today);
-		double accruedAmount = calculateAccruedAmount(deposit.amount, days); // 0.10% interest per day
+		double accruedAmount = calculateAccruedAmount(deposit.amount, days); // 0.25% interest per day
 
 		std::cout << "Original Amount: " << deposit.amount << " ";
 		std::cout << "Amount as of " << formatDate(today) << ": " << accruedAmount << " ";

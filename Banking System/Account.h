@@ -31,7 +31,8 @@ public:
 	void print();
 
 };
-
+	bool checkName(const std::string& name, std::set<std::string> names);
+	bool checkPassword(const std::string& password);
 
 
 #endif 
