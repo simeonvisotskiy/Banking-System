@@ -26,7 +26,7 @@ public:
 	void setPassword(const std::string& password_) { password = password_; }
 	void setAmount(const double& amount_) { amount = amount_; }
 
-	void createAccount(std::vector<Account>& accounts);
+	bool createAccount(std::vector<Account>& accounts);
 	void printAmount();
 	void print();
 

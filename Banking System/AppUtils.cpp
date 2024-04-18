@@ -91,9 +91,14 @@ bool logIn(std::vector<Account>& accounts, Account& acc) {
 		
 		std::cout << "Incorrect name or password\n";
 		std::cout << "Try again Y/N: ";
-		char choice;
+		std::string choice;
 		std::cin >> choice;
-		if (choice == 'n' || choice == 'N') {
+		while (choice != "y" && choice != "Y" && choice != "n" && choice != "N") {
+			std::cout << "Invalid input. Try again Y/N: ";
+			std::cin >> choice;
+		}
+
+		if (choice == "n" || choice == "N") {
 			return false;
 		}
 		
@@ -117,9 +122,8 @@ void mainMenu(Account& acc, std::vector<Account>& accounts)
 		std::cin >> choice;
 		std::cin.ignore();
 
-		if (choice == "1")
-		{
-			std::cout << "Account balance: " << acc.getAmount() << std::endl;
+		if (choice == "1") {
+			std::cout << std::fixed << std::setprecision(2) << "Account balance: " << acc.getAmount() << std::endl;
 		}
 		else if (choice == "2")
 		{
@@ -193,34 +197,55 @@ std::vector< Account> getNamesAndPass() {
 }
 
 void withdrawMoney(Account& acc) {
-	std::cout << "Available balance:" << acc.getAmount()<<std::endl;
-	double amount;
-	std::cin >> amount;
-	if (amount <= 0) {
-		std::cout << "Withdrawl shoud be positive.\n";
+	std::cout << "Available balance: " << acc.getAmount() << std::endl;
+	double amount = 0.0;
+	std::string amountStr;
+
+	std::getline(std::cin, amountStr);
+
+	if (amountStr.empty() || !std::all_of(amountStr.begin(), amountStr.end(), [](char c) { return std::isdigit(c) || c == '.'; }) || std::count(amountStr.begin(), amountStr.end(), '.') > 1) {
+		std::cout << "Withdrawal amount should be a positive number.\n";
 		return;
 	}
+
+	amount = std::stod(amountStr);
+
+	if (amount <= 0) {
+		std::cout << "Withdrawal amount should be positive.\n";
+		return;
+	}
+
 	if (acc.getAmount() - amount < 0) {
-		std::cout << "Unable to complete transaction\n";
+		std::cout << "Unable to complete transaction.\n";
 	}
 	else {
 		acc.setAmount(acc.getAmount() - amount);
-		std::cout << "Withdrawl successful.";
+		std::cout << "Withdrawal successful.\n";
 	}
-
 }
 
 void depositMoney(Account& acc) {
-	double deposit;
-	std::cout << "Enter deposit: ";
-	std::cin >> deposit;
-	if (deposit > 0) {
-		acc.setAmount(acc.getAmount() + deposit);
-		std::cout << "Deposit successful." << std::endl;
+	double deposit = 0.0;
+	std::string depositStr;
+	std::cout << "Enter deposit amount: ";
+	std::getline(std::cin, depositStr);
+
+	if (depositStr.empty() || !std::all_of(depositStr.begin(), depositStr.end(), [](char c) { return std::isdigit(c) || c == '.'; })) {
+		std::cout << "Deposit amount should be a positive number.\n";
+		return;
 	}
-	else {
-		std::cout << "Invalid deposit amount." << std::endl;
+	deposit = std::stod(depositStr);
+
+	if (deposit <= 0) {
+		std::cout << "Deposit amount should be positive.\n";
+		return;
 	}
+
+	std::streamsize prec = std::cout.precision();
+	std::cout << std::fixed << std::setprecision(2);
+	acc.setAmount(acc.getAmount() + deposit);
+	std::cout << "Deposit successful.\n";
+	std::cout.precision(prec);
 }
 
 void updateAccount(std::vector<Account>& accounts, const Account& updateAccount) {
@@ -256,48 +281,72 @@ void displayExchangeRate(const std::vector<Account>& accounts) {
 void sendMoney(std::vector<Account>& accounts, Account& curr) {
 	std::string name;
 	bool transaction = false;
-	double amount;
 
 	while (!transaction) {
 		std::cout << "\nType the account name to send money to: ";
 		std::cin >> name;
-
+		
+		if (name == curr.getName()) {
+			std::cout << "Cannot transfer money to the same account." << std::endl;
+			continue; 
+		}
+		bool found = false;
 		for (auto& account : accounts) {
-			if (account.getName() == name ) {
+			if (account.getName() == name) {
 				std::string password;
 				std::cout << "Enter the account password: ";
 				std::cin >> password;
 
 				if (curr.getPassword() == password) {
-					std::cout << "Available balance:" << curr.getAmount() << std::endl;
+					std::cout << "Available balance:" << std::fixed << std::setprecision(2) << curr.getAmount() << std::endl;
+					std::string amountStr;
 					std::cout << "Enter amount to transfer: ";
-					std::cin >> amount;
-					if (curr.getAmount() >= amount) {
+					std::cin >> amountStr;
+
+					double amount;
+					try {
+						amount = std::stod(amountStr);
+					}
+					catch (const std::invalid_argument& e) {
+						std::cout << "Invalid amount. Please try again." << std::endl;
+						continue;
+					}
+
+					if (amount <= 0 || amount > curr.getAmount()) {
+						std::cout << "Invalid amount. Please try again." << std::endl;
+					}
+					else {
 						curr.setAmount(curr.getAmount() - amount);
 						account.setAmount(account.getAmount() + amount);
 						updateAccount(accounts, curr);
 						updateAccount(accounts, account);
-						std::cout << "Transfer succesful! " << std::endl;
+						std::cout << "Transfer successful! " << std::endl;
 						transaction = true;
-						return;
 					}
-					else {
-						std::cout << "Insufficient funds." << std::endl;
-					}
+					return;
 				}
 				else {
 					std::cout << "Incorrect password." << std::endl;
 				}
-				
+				found = true;
 				break;
 			}
-
 		}
+		if (!found) {
+			std::cout << "Account name not found.\n";
+		}
+
 		if (!transaction) {
-			std::cout << "Try again Y/N: ";
-			char choice;
+			std::string choice;
+			std::cout << "Continue? (Y/N): ";
 			std::cin >> choice;
-			if (choice == 'n' || choice == 'N') {
+
+			while (choice != "y" && choice != "Y" && choice != "n" && choice != "N") {
+				std::cout << "Invalid input. Try again Y/N: ";
+				std::cin >> choice;
+			}
+
+			if (choice == "n" || choice == "N") {
 				return;
 			}
 		}
@@ -320,7 +369,7 @@ void depositMenu(Account& acc, std::vector<Account>& accounts) {
 			std::cout << "Enter deposit amount: ";
 			std::getline(std::cin, amountStr);
 
-			if (amountStr.empty() || !std::all_of(amountStr.begin(), amountStr.end(), ::isdigit)) {
+			if (amountStr.empty() || !std::all_of(amountStr.begin(), amountStr.end(), [](char c) { return std::isdigit(c) || c == '.'; }) || std::count(amountStr.begin(), amountStr.end(), '.') > 1) {
 				std::cout << "Invalid deposit amount. Please enter a valid number.\n";
 				continue;
 			}
@@ -345,7 +394,7 @@ void depositMenu(Account& acc, std::vector<Account>& accounts) {
 			auto now = std::chrono::system_clock::now();
 			auto sixMonthsFromNow = now + std::chrono::months(6);
 
-			if (expiryDate <= now || expiryDate > sixMonthsFromNow) {
+			if (expiryDate < sixMonthsFromNow) {
 				std::cout << "The expiry date should be at least 6 months from now.\n";
 				continue;
 			}

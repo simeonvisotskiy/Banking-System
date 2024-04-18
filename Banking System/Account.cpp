@@ -6,54 +6,76 @@ Account::Account():amount(0), name(""), password("") {}
 Account::Account(double amount, std::string name, std::string password)
 	: amount(amount), name(name), password(password) {}
 
-void Account::createAccount(std::vector<Account>& accounts) {
-	std::set<std::string> names;
-	for (const auto& acc : accounts) {
-		names.insert(acc.getName());
-	}
+bool Account::createAccount(std::vector<Account>& accounts) {
+    std::set<std::string> names;
+    for (const auto& acc : accounts) {
+        names.insert(acc.getName());
+    }
 
-	std::string tempName;
-	std::cout << "\nEnter your Name (or 0 to return to the main menu): ";
-	std::cin >> tempName;
+    std::string tempName;
+    std::cout << "\nEnter your Name (or 0 to return to the main menu): ";
+    std::getline(std::cin, tempName);
 
-	if (tempName == "0") {
-		return;
-	}
-	
-	while (!checkName(tempName,names)) {
-		std::cout << "Enter a new one (or 0 to return to the main menu):";
-		std::cin >> tempName;
+    if (tempName == "0") {
+        return false;
+    }
 
-		if (tempName == "0") {
-			return;
-		}
-	}
-	this->name = tempName;
+    while (!checkName(tempName, names)) {
+        std::cout << "Enter a new one (or 0 to return to the main menu): ";
+        std::getline(std::cin, tempName);
 
-	std::string tempPass;
-	std::cout << "\nEnter your password (or 0 to return to the main menu):";
-	std::cin >> tempPass;
-	if (tempPass == "0") {
-		return;
-	}
+        if (tempName == "0") {
+            return false;
+        }
+    }
+    this->name = tempName;
 
-	while (!checkPassword(tempPass)) {
-		std::cout << "Enter a new one (or 0 to return to the main menu): ";
-		std::cin >> tempPass;
+    std::string tempPass;
+    std::cout << "\nEnter your password (or 0 to return to the main menu): ";
+    std::getline(std::cin, tempPass);
+    if (tempPass == "0") {
+        return false;
+    }
 
-		if (tempPass == "0") {
-			return;
-		}
-	}
+    while (!checkPassword(tempPass)) {
+        std::cout << "Enter a new one (or 0 to return to the main menu): ";
+        std::getline(std::cin, tempPass);
 
-	std::cout << "\nEnter a deposit: ";
-	std::cin >> this->amount;
+        if (tempPass == "0") {
+            return false;
+        }
+    }
 
-	Account newAccount(amount, tempName, tempPass);
+    double deposit = 0.0;
+    std::string depositStr;
+    while (true) {
+        std::cout << "\nEnter a deposit (minimum 10): ";
+        std::getline(std::cin, depositStr);
 
-	accounts.push_back(newAccount);
+        if (depositStr == "0") {
+            return false;
+        }
 
+        try {
+            deposit = std::stod(depositStr);
+            if (deposit >= 10.0) {
+                break;
+            }
+        }
+        catch (const std::invalid_argument&) {}
+
+        std::cout << "Invalid deposit amount.\n";
+    }
+
+    this->amount = deposit;
+
+    Account newAccount(amount, tempName, tempPass);
+
+    accounts.push_back(newAccount);
+
+    return true;
 }
+
 
 void Account::print() {
 	std::cout << name<<"\n";

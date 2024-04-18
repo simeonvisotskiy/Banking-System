@@ -16,7 +16,7 @@ int main() {
 		std::cout << "3. Exit\n";
 		std::cin >> choice;
 		std::cin.ignore();
-
+	
 		if (choice == "1") {
 			Account logInAccount;
 			if (logIn(accounts, logInAccount)) {
@@ -25,7 +25,9 @@ int main() {
 		}
 		else if (choice == "2") {
 			Account newAccount;
-			newAccount.createAccount(accounts);
+			if (!newAccount.createAccount(accounts)) {
+				continue;
+			}
 			saveAccount(accounts);
 			mainMenu(newAccount, accounts);
 		}
