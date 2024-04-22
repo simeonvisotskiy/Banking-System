@@ -72,7 +72,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LibraryWPath>$(WindowsSDK_MetadataPath);</LibraryWPath>
-    <LibraryPath>C:\Users\Simeon\Downloads\curl-8.7.1_7-win64-mingw\lib;C:\Users\Simeon\Downloads\curl-8.7.1_7-win64-mingw\lib;$(LibraryPath)C:\Users\Simeon\Downloads\curl-8.7.1_7-win64-mingw\lib</LibraryPath>
+    <LibraryPath>C:\Users\Simeon\Downloads\curl-8.7.1_7-win64-mingw\lib;C:\Users\Simeon\Downloads\curl-8.7.1_7-win64-mingw\lib;$(LibraryPath)C:\Users\Simeon\Downloads\curl-8.7.1_7-win64-mingw\lib;C:\dev\vcpkg\vcpkg-master\installed\x64-windows\lib;C:\dev\vcpkg\vcpkg-master\installed\x64-windows\lib</LibraryPath>
+    <IncludePath>C:\dev\vcpkg\vcpkg-master\installed\x64-windows\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LibraryPath>C:\Users\Simeon\Downloads\curl-8.7.1_7-win64-mingw\lib;C:\Users\Simeon\Downloads\curl-8.7.1_7-win64-mingw\lib;$(LibraryPath);C:\Users\Simeon\Downloads\curl-8.7.1_7-win64-mingw\libC:\Users\Simeon\Downloads\curl-8.7.1_7-win64-mingw\lib</LibraryPath>
@@ -81,7 +82,8 @@
     <LibraryPath>C:\Users\Simeon\Downloads\curl-8.7.1_7-win64-mingw\lib;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);C:\Users\Simeon\Downloads\curl-8.7.1_7-win64-mingw\libC:\Users\Simeon\Downloads\curl-8.7.1_7-win64-mingw\lib</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LibraryPath>C:\Users\Simeon\Downloads\curl-8.7.1_7-win64-mingw\lib;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86)C:\Users\Simeon\Downloads\curl-8.7.1_7-win64-mingw\lib</LibraryPath>
+    <LibraryPath>C:\Users\Simeon\Downloads\curl-8.7.1_7-win64-mingw\lib;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86)C:\Users\Simeon\Downloads\curl-8.7.1_7-win64-mingw\lib;C:\dev\vcpkg\vcpkg-master\installed\x64-windows\lib;C:\dev\vcpkg\vcpkg-master\installed\x64-windows\lib</LibraryPath>
+    <IncludePath>C:\dev\vcpkg\vcpkg-master\installed\x64-windows\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -97,8 +99,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>C:\Users\Simeon\Downloads\curl-8.7.1_7-win64-mingw\curl-8.7.1_7-win64-mingw</AdditionalLibraryDirectories>
-      <AdditionalDependencies>
-      </AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy /Y C:\Users\Simeon\Downloads\curl-8.7.1.tar.gz $(OutDir)</Command>
@@ -138,8 +139,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>C:\Users\Simeon\Downloads\curl-8.7.1_7-win64-mingw\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>
-      </AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -168,8 +168,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Account.cpp" />
+    <ClCompile Include="Account.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="AppUtils.cpp" />
+    <ClCompile Include="Tests\BankingTests.cpp" />
     <ClCompile Include="Deposits.cpp" />
     <ClCompile Include="FXData.cpp" />
     <ClCompile Include="Main.cpp" />

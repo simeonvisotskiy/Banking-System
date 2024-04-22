@@ -323,7 +323,7 @@ void sendMoney(std::vector<Account>& accounts, Account& curr) {
 						std::cout << "Transfer successful! " << std::endl;
 						transaction = true;
 					}
-					return;
+					//return;
 				}
 				else {
 					std::cout << "Incorrect password." << std::endl;
@@ -338,7 +338,7 @@ void sendMoney(std::vector<Account>& accounts, Account& curr) {
 
 		if (!transaction) {
 			std::string choice;
-			std::cout << "Continue? (Y/N): ";
+			std::cout << "Try again? (Y/N): ";
 			std::cin >> choice;
 
 			while (choice != "y" && choice != "Y" && choice != "n" && choice != "N") {

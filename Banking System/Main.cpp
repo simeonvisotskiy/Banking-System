@@ -1,9 +1,15 @@
 #include "Account.h"
 #include "AppUtils.h"
 #include"FXData.h"
+#include <gtest/gtest.h>
+
 
 
 int main() {
+	/*std::vector<Account> accounts;
+	Account acc;
+	bool created = acc.createAccountTest(accounts, "TestUser", "TestPass123", 50);
+	std::cout << "Account created: " << created << std::endl;*/
 
 	Account acc;
 	std::string choice;

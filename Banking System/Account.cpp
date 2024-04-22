@@ -2,9 +2,8 @@
 #include "AppUtils.h"
 
 Account::Account():amount(0), name(""), password("") {}
-
-Account::Account(double amount, std::string name, std::string password)
-	: amount(amount), name(name), password(password) {}
+Account::Account(double amount, const std::string& name, const std::string& password)
+    : amount(amount), name(name), password(password) {}
 
 bool Account::createAccount(std::vector<Account>& accounts) {
     std::set<std::string> names;
@@ -141,4 +140,12 @@ bool checkPassword(const std::string& password) {
 }
 
 
-	
+//bool Account::createAccountTest(std::vector<Account>& accounts, const std::string& name, const std::string& password, double deposit) {
+//    if (deposit < 10.0) return false;
+//    if (!checkName(name, std::set<std::string>(begin(accounts), end(accounts)))) return false;
+//    if (!checkPassword(password)) return false;
+//
+//    Account newAccount(deposit, name, password);
+//    accounts.push_back(newAccount);
+//    return true;
+//}

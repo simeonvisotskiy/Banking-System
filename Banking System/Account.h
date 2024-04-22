@@ -17,7 +17,7 @@ class Account
 
 public:
 	Account();
-	Account(double amount, std::string name, std::string password);
+	Account(double amount, const std::string& name, const std::string& password);
 	std::string getName()const { return name; }
 	std::string getPassword()const { return password; }
 	double getAmount()const { return amount; }
@@ -29,6 +29,7 @@ public:
 	bool createAccount(std::vector<Account>& accounts);
 	void printAmount();
 	void print();
+	//bool createAccountTest(std::vector<Account>& accounts, const std::string& name, const std::string& password, double deposit);
 
 };
 	bool checkName(const std::string& name, std::set<std::string> names);
