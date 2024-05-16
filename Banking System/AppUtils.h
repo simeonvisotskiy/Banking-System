@@ -36,7 +36,7 @@ void depositMoney(Account& acc);
 
 void updateAccount(std::vector<Account>& accounts, const Account& updateAccount);
 
-void displayExchangeRate(const std::vector<Account>& accounts);
+void displayExchangeRate();
 
 void sendMoney(std::vector<Account>& accounts, Account& currAccount);
 

@@ -3,13 +3,21 @@
 #include"FXData.h"
 #include <gtest/gtest.h>
 
+TEST(AccountTests, AccountInitialization) {
+
+	Account testAccount(100.0, "TestUser", "TestPass1!");
+
+
+	EXPECT_EQ(testAccount.getAmount(), 100.0) << "The account balance should be initialized to 100.0";
+
+	EXPECT_EQ(testAccount.getName(), "TestUser") << "The account name should be 'TestUser'";
+
+	EXPECT_EQ(testAccount.getPassword(), "TestPass1!") << "The account password should be 'TestPass1!'";
+}
 
 
 int main() {
-	/*std::vector<Account> accounts;
-	Account acc;
-	bool created = acc.createAccountTest(accounts, "TestUser", "TestPass123", 50);
-	std::cout << "Account created: " << created << std::endl;*/
+	
 
 	Account acc;
 	std::string choice;

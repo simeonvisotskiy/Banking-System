@@ -6,6 +6,8 @@
 #include <curl/curl.h>
 #include <nlohmann/json.hpp>
 #include <map>
+#include <cstdlib>  // for std::getenv
+
 
 class FXData {
 public:

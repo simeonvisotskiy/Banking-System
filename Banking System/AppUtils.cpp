@@ -152,7 +152,7 @@ void mainMenu(Account& acc, std::vector<Account>& accounts)
 		}
 		else if (choice == "5")
 		{
-			displayExchangeRate(accounts);
+			displayExchangeRate();
 		}
 		else if (choice == "6")
 		{
@@ -259,24 +259,30 @@ void updateAccount(std::vector<Account>& accounts, const Account& updateAccount)
 	}
 }
 
-void displayExchangeRate(const std::vector<Account>& accounts) {
-	FXData fxData; 
+void displayExchangeRate() {
+	FXData fxData;
 	std::map<std::string, double> rates;
 	std::string currency;
+	std::string secondCurrency;
 
 	std::cout << "Enter the currency code (e.g., EUR, USD): ";
 	std::cin >> currency;
+	std::cout << "Enter the second one: ";
+	std::cin >> secondCurrency;
 
-	std::string apiUrl = "https://api.exchangerate-api.com/v4/latest/BGN?access_key=YOUR_API_KEY";
-	rates = fxData.getApiData(apiUrl,"BGN");
+	// Constructing the API URL using the first entered currency
+	std::string apiUrl = "https://api.exchangerate-api.com/v4/latest/" + currency + "?access_key=YOUR_API_KEY";
+	rates = fxData.getApiData(apiUrl, secondCurrency);  // This function now just uses the URL
 
-	if (rates.find(currency) != rates.end()) {
-		std::cout << "1 BGN = " << rates[currency] << " " << currency << std::endl;
+	// Check if both currencies exist in the rates map
+	if (rates.find(currency) != rates.end() && rates.find(secondCurrency) != rates.end()) {
+		std::cout << "1 " << currency << " = " << rates[secondCurrency] << " " << secondCurrency << std::endl;
 	}
 	else {
 		std::cout << "Currency not found or API error.\n";
 	}
 }
+
 
 void sendMoney(std::vector<Account>& accounts, Account& curr) {
 	std::string name;

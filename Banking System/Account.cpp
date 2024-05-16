@@ -1,9 +1,11 @@
 #include "Account.h"
 #include "AppUtils.h"
 
+
 Account::Account():amount(0), name(""), password("") {}
 Account::Account(double amount, const std::string& name, const std::string& password)
     : amount(amount), name(name), password(password) {}
+extern void sendEmailWithCode(const std::string& email, const std::string& code);
 
 bool Account::createAccount(std::vector<Account>& accounts) {
     std::set<std::string> names;
@@ -11,65 +13,69 @@ bool Account::createAccount(std::vector<Account>& accounts) {
         names.insert(acc.getName());
     }
 
-    std::string tempName;
+    std::string tempName, email;
     std::cout << "\nEnter your Name (or 0 to return to the main menu): ";
     std::getline(std::cin, tempName);
-
-    if (tempName == "0") {
-        return false;
-    }
+    if (tempName == "0") return false;
 
     while (!checkName(tempName, names)) {
         std::cout << "Enter a new one (or 0 to return to the main menu): ";
         std::getline(std::cin, tempName);
-
-        if (tempName == "0") {
-            return false;
-        }
+        if (tempName == "0") return false;
     }
     this->name = tempName;
+
+    std::cout << "\nEnter your Email (or 0 to return to the main menu): ";
+    std::getline(std::cin, email);
+    if (email == "0") return false;
+
+    
+    std::string pythonCommand = "python \"C:\\Users\\Simeon\\source\\repos\\Banking System\\PythonEmailService\\send_email.py\" " + email;
+    std::system(pythonCommand.c_str());
+
+    
+    std::ifstream infile("verification_code.txt");
+    std::string verificationCode;
+    std::getline(infile, verificationCode);
+    infile.close();
+
+    std::string inputCode;
+    std::cout << "Enter the verification code sent to your email: ";
+    std::getline(std::cin, inputCode);
+    if (inputCode == "0" || inputCode != verificationCode) {
+        std::cout << "Invalid or incorrect verification code.\n";
+        return false;
+    }
 
     std::string tempPass;
     std::cout << "\nEnter your password (or 0 to return to the main menu): ";
     std::getline(std::cin, tempPass);
-    if (tempPass == "0") {
-        return false;
-    }
+    if (tempPass == "0") return false;
 
     while (!checkPassword(tempPass)) {
         std::cout << "Enter a new one (or 0 to return to the main menu): ";
         std::getline(std::cin, tempPass);
-
-        if (tempPass == "0") {
-            return false;
-        }
+        if (tempPass == "0") return false;
     }
 
     double deposit = 0.0;
     std::string depositStr;
-    while (true) {
-        std::cout << "\nEnter a deposit (minimum 10): ";
-        std::getline(std::cin, depositStr);
+    std::cout << "\nEnter a deposit (minimum 10): ";
+    std::getline(std::cin, depositStr);
+    if (depositStr == "0") return false;
 
-        if (depositStr == "0") {
-            return false;
-        }
-
-        try {
-            deposit = std::stod(depositStr);
-            if (deposit >= 10.0) {
-                break;
-            }
-        }
-        catch (const std::invalid_argument&) {}
-
+    try {
+        deposit = std::stod(depositStr);
+        if (deposit < 10.0) throw std::invalid_argument("Deposit must be at least 10");
+    }
+    catch (const std::invalid_argument&) {
         std::cout << "Invalid deposit amount.\n";
+        return false;
     }
 
     this->amount = deposit;
 
     Account newAccount(amount, tempName, tempPass);
-
     accounts.push_back(newAccount);
 
     return true;
@@ -149,3 +155,4 @@ bool checkPassword(const std::string& password) {
 //    accounts.push_back(newAccount);
 //    return true;
 //}
+
